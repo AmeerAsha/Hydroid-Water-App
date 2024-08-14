@@ -1,11 +1,12 @@
 import React, {useContext} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import LoginScreen from '../screens/Login';
+
 import {AuthContext} from '../context/AuthContext';
 import AppNavigator from '../screens/AppNavigator';
 import TicketDetails from '../screens/Tickets/TicketDetails';
 import PaymentDetails from '../screens/Payments/PaymentDetails';
+import LoginScreen from '../screens/Login';
 
 
 
@@ -17,7 +18,6 @@ const Navigation = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-      
         {userInfo.roleName == "CUSTOMER"? (
           <Stack.Screen 
             name="HYDROID"
@@ -45,5 +45,4 @@ const Navigation = () => {
     </NavigationContainer>
   );
 };
-
 export default Navigation;

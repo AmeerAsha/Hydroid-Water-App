@@ -7,16 +7,14 @@ import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon4 from 'react-native-vector-icons/FontAwesome6';
 import colors from '../../ui/colors';
 import Dashboard from '../Dashboard';
-import NewTicket from '../NewTicket';
-import Notifications from '../Notifications';
 import Leaks from '../Leaks';
 import Logout from '../Logout';
 import WaterUsage from '../WaterUsage';
 import Payments from '../Payments/Payments';
-
+import Notifications from '../Notifications';
+import NewTicket from '../Tickets/NewTicket';
 
 const Tab = createBottomTabNavigator();
-
 const AppNavigator = () => {
   return (
     <>

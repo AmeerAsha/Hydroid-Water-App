@@ -1,14 +1,9 @@
-import { Alert, Text } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert} from 'react-native';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
-
-
 const Logout = () => {
   const {logout} = useContext(AuthContext);
-  
-  
-  useEffect(()=>{
+   useEffect(()=>{
     logout();   
   },
 []);

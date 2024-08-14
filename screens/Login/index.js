@@ -1,16 +1,11 @@
 import React, {useContext, useState} from 'react';
-import {
-  Button,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  StyleSheet,
-} from 'react-native';
+import {Button,Text,TextInput,View} from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {AuthContext} from '../context/AuthContext';
+import {AuthContext} from '../../context/AuthContext';
+import styles from './styles';
+import config from '../../Configurations/APIConfig';
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = () => {
   const [username, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const {isLoading, login} = useContext(AuthContext);
@@ -35,16 +30,14 @@ const LoginScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       
-      <Text style={{fontSize:50,fontWeight:"bold",color:"black",marginTop:20}}>HYDROID</Text>
+      <Text style={styles.heading1}>HYDROID</Text>
       <Text>SMART METERING SOLUTIONS</Text>
       <Text>----------------------------------------------------</Text>
-      <Text style={{fontSize:20,fontWeight:600,color:"#405189",marginTop:25}}>Welcome Back !</Text>
+      <Text style={styles.heading2}>Welcome Back !</Text>
       <Text>Sign in to continue.</Text>
-      
-                               
-      <Spinner visible={isLoading} />
+     <Spinner visible={isLoading} />
       <View style={styles.wrapper}>
-        <Text style={{fontSize:18,fontWeight:400,color:"black",marginTop:20}}>Username*</Text>
+        <Text style={styles.username}>Username*</Text>
         <TextInput
           style={styles.input}
           value={username}
@@ -55,7 +48,7 @@ const LoginScreen = ({navigation}) => {
        {errors.username ? (
           <Text style={styles.errorText}>{errors.username}</Text>
         ) : null}
-        <Text style={{fontSize:18,fontWeight:400,color:"black"}}>Password*</Text>
+        <Text style={styles.password}>Password*</Text>
         <TextInput
           style={styles.input}
           value={password}
@@ -68,50 +61,20 @@ const LoginScreen = ({navigation}) => {
           <Text style={styles.errorText}>{errors.password}</Text>
         ) : null}
         <Button
-        style={{color:"#0ab39c"}}
+        style={styles.btn}
           title="Login"
           onPress={() => 
             handleSubmit(username, password)
             //login(username, password);
           }
         />
-
-        <View style={{flexDirection: 'row', marginTop: 20}}>
+        <View style={styles.bottom}>
           <Text>Don't have an account? </Text>
-          
             <Text style={styles.link}>Contact Adminstrator</Text>
-         
         </View>
       </View>
       </View>
     
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  wrapper: {
-    width: '80%',
-  },
-  input: {
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#bbb',
-    borderRadius: 5,
-    paddingHorizontal: 14,
-  },
-  link: {
-    color: 'blue',
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-  },
-});
-
-
 export default LoginScreen;

@@ -39,24 +39,15 @@ export const AuthProvider = ({children}) => {
 
   const logout = () => {
     setIsLoading(true);
-
-   
-        
         AsyncStorage.removeItem('userInfo');
         setUserInfo({});
         setIsLoading(false);
-      
-      
-  };
-
-
+   };
   const isLoggedIn = async () => {
     try {
       setSplashLoading(true);
-
       let userInfo = await AsyncStorage.getItem('userInfo');
       userInfo = JSON.parse(userInfo);
-
       if (userInfo) {
         setUserInfo(userInfo);
       }
@@ -77,7 +68,6 @@ export const AuthProvider = ({children}) => {
         isLoading,
         userInfo,
         splashLoading,
-        
         login,
         logout,
         isLoggedIn
