@@ -24,9 +24,9 @@ export default StyleSheet.create({
         marginBottom: 10,
       },
       heading1:{fontSize:50,fontWeight:"bold",color:"black",marginTop:20},
-      heading2:{fontSize:20,fontWeight:600,color:"#405189",marginTop:25},
-      username:{fontSize:18,fontWeight:400,color:"black",marginTop:20},
-      password:{fontSize:18,fontWeight:400,color:"black"},
+      heading2:{fontSize:20,fontWeight:"600",color:"#405189",marginTop:25},
+      username:{fontSize:18,fontWeight:"400",color:"black",marginTop:20},
+      password:{fontSize:18,fontWeight:"400",color:"black"},
       btn:{color:"#0ab39c"},
       bottom:{flexDirection: 'row', marginTop: 20}
 });

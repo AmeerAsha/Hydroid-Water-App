@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import colors from '../../ui/colors'
+import colors from '../../../ui/colors'
 
 export default StyleSheet.create({
     page: {
@@ -14,7 +14,7 @@ export default StyleSheet.create({
       },
       formLabels: {
         fontSize: 19,
-        fontWeight: '600',
+        fontWeight:'600',
         margin: 10,
         color: "#088675",
       },

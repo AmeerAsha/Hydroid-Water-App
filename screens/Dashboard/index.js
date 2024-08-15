@@ -69,7 +69,7 @@ const Dashboard = ({navigation}) => {
 
   const GetBarGraphDataWeekly = () => {
     
-    axios.get(config.APIACTIVATEURL + config.GETUSERBARGRAPHDATA+"?DateFrom="+`${dateFromWeekly1}`+"&DateTo="+`${dateFromToday1}`+"&UserId="+`${UserId}`).then
+    axios.get(config.APIACTIVATEURL + config.GETUSERBARGRAPHDATA + "?DateFrom="+`${dateFromWeekly1}`+"&DateTo="+`${dateFromToday1}`+"&UserId="+`${UserId}`).then
        ((res)=>
        {
         setBarData(res.data.data);

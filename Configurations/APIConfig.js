@@ -147,7 +147,7 @@ module.exports = {
     GETWATERUSAGECOUNT: 'WaterUsage/GetWaterUsageCount',
     GETUSERWATERUSAGECOUNT: 'WaterUsage/GetUserWaterUsageCount',
     GETBARGRAPHDATA: 'WaterUsage/GetBarGraphData',
-    GETUSERBARGRAPHDATA: 'WaterUsage/GetUserBarGraphData',
+    GETUSERBARGRAPHDATA: 'WaterUsage/GetUserBarGraph',
     GETLEAKDATA: 'WaterUsage/GetLeakInformation',
     GETBARGRAPHDATEWISE: 'WaterUsage/GetBarGraphDateWise',
     GETUSERBARGRAPHDATEWISE: 'WaterUsage/GetUserBarGraphDateWise',

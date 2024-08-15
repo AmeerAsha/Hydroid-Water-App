@@ -9,7 +9,7 @@ import styles from './styles';
 import pickerSelectStyles from'./styles'
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import * as XLSX from 'xlsx'
-import RNFS from 'react-native-fs';
+import {writeFile,DownloadDirectoryPath} from 'react-native-fs';
 import RNPickerSelect from 'react-native-picker-select';
 import config from '../../Configurations/APIConfig';
 
@@ -34,7 +34,7 @@ const WaterUsage = () => {
   
 
   
-  const printPDF =  () => {
+  const printPDF = async () => {
     const html = `<html>
     <head>
             <style>
@@ -67,6 +67,7 @@ const WaterUsage = () => {
                                                         <th data-ordering="false">Meter For</th>
                                                         <th data-ordering="false">Meter No</th>
                                                         <th data-ordering="false">Reading</th>
+                                                        <th data-ordering="false">Usage</th>
                                                     </tr>
                                                 
                                                
@@ -97,20 +98,10 @@ const WaterUsage = () => {
       height:500,
       width:800
       };
-      try{
-        const pdf =  RNHTMLtoPDF.convert(options);
+      
+        let pdf = await RNHTMLtoPDF.convert(options);
         Alert.alert('PDF Generated', `PDF saved to: ${pdf.filePath}`);
-        const destPath = `${RNFS.DownloadDirectoryPath}/MeterReading.pdf`;
-       RNFS.moveFile(pdf.filePath, destPath);
-      Alert.alert('PDF Moved', `PDF moved to: ${destPath}`);
-      }catch (error) {
-        Alert.alert('Error', `Failed to generate PDF: ${error.message}`);
-      }
-
-    
-
-    
-  }
+    }
   
   const exportToExcel = () => {
     var fileName ="/MeterReading-" + moment(dateFrom3).format('DDMMYYYY') + "-" + moment(dateTo0).format('DDMMYYYY');
@@ -122,11 +113,9 @@ const WaterUsage = () => {
     // Add the worksheet to the workbook
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     const wbout = XLSX.write(wb, { type: 'binary', bookType: "xlsx" });
-    const filePath = `${RNFS.DocumentDirectoryPath}/MeterReading.xlsx`;
-
     // Save the workbook as an Excel file
-    RNFS.writeFile(RNFS.DownloadDirectoryPath +`${fileName}.xlsx`, wbout, 'ascii').then((r) => {
-      Alert.alert('Excel file saved at:', filePath)
+   writeFile(DownloadDirectoryPath +`/MeterReading.csv`, wbout, 'ascii').then((r) => {
+      Alert.alert('Excel file saved ')
 
    }).catch((e) => {
        console.log('Error', e);
@@ -271,12 +260,12 @@ const combinedOptions = [...staticOptions, ...DynamicOptions];
           <Text style={styles.usageText}>Water Usage Data</Text>
           <View style={styles.btnView}>
             <TouchableOpacity
-              style={[styles.btn1Style]}
+              style={styles.btn1Style}
               onPress={printPDF}>
               <Text style={styles.textStyle}>PDF</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.btn2Style]}
+              style={styles.btn2Style}
               onPress={exportToExcel}>
               <Text style={styles.textStyle}>Excel</Text>
             </TouchableOpacity>

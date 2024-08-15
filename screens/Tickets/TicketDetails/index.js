@@ -43,7 +43,7 @@ const TicketDetails = () => {
     axios.get(config.APIACTIVATEURL + config.GETTICKETRESPONSEBYID + "?TicketId="+`${id}`).then
        ((res)=>
        {
-        const response = (res.data.data.data);
+        const response = (res.data.data);
         setTicketResponse(response);
         console.log(response)
       }

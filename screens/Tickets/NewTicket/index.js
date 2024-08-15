@@ -1,27 +1,28 @@
-import {StyleSheet,View,Text,TextInput,ScrollView,TouchableOpacity,Alert} from 'react-native';
-import colors from '../ui/colors';
+import {View,Text,TextInput,ScrollView,TouchableOpacity,Alert} from 'react-native';
 import { useContext, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import RNPickerSelect from 'react-native-picker-select';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../../../context/AuthContext';
 import Icon from 'react-native-vector-icons/Entypo';
 import Icon1 from 'react-native-vector-icons/AntDesign'
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons'
 import styles from './styles';
 import config from '../../../Configurations/APIConfig';
+
+const initialFieldValues = {
+  ticketId: "00000000-0000-0000-0000-000000000000",
+  ticketCategoryId: "00000000-0000-0000-0000-000000000000",
+  ticketQuery: "",
+  ticketStatus: "OPEN",
+  ticketPriority: "LOW",
+  userId: "00000000-0000-0000-0000-000000000000",
+};
   
    const NewTicket = ({navigation}) => {
          const scrollRef = useRef();
          const {userInfo} = useContext(AuthContext);
          const UserId = userInfo.userId
-         const initialFieldValues = {
-                   ticketId: "00000000-0000-0000-0000-000000000000",
-                   ticketCategoryId: "00000000-0000-0000-0000-000000000000",
-                   ticketQuery: "",
-                   ticketStatus: "OPEN",
-                   ticketPriority: "LOW",
-                   userId: "00000000-0000-0000-0000-000000000000",
-              };
+         
     const [values, setValues] = useState(initialFieldValues);
     const [ticket, setTicket] = useState([]);
     const [Category, setCategory] = useState([]);
@@ -51,13 +52,16 @@ import config from '../../../Configurations/APIConfig';
         }
          );
     };
-    
     useEffect(()=>{
       GetTicketDetails();
       GetTicketCategories();
     },
     
     []);
+    useEffect(() => {
+      if (recordForEdit !== null) setValues(recordForEdit);
+    }, [recordForEdit]);
+    
      
     const GetTicketCategories = () => {
       axios
@@ -67,8 +71,10 @@ import config from '../../../Configurations/APIConfig';
           console.log(response.data.data.data)
         });
     };
-    const handleInputChange = (text, value) => {
-      setValues(prevState => ({...prevState, [value]:text}))
+    const handleInputChange = (name,value) => {
+      setValues({...values,
+        [name]:value,
+    })
     }; 
     
     const handleSubmit = () => {
@@ -86,43 +92,51 @@ import config from '../../../Configurations/APIConfig';
     
   }
 
-    const addOrEdit = (formData) => {
-      console.log(formData);
-      if (formData.ticketId === "00000000-0000-0000-0000-000000000000") {
-        axios.post(config.APIACTIVATEURL + config.CREATETICKET
-      )
+  const applicationAPI = () => {
+    return {
+        create: (newrecord) =>
+            axios.post(config.APIACTIVATEURL + config.CREATETICKET, newrecord),
+        update: (updateRecord) =>
+            axios.put(config.APIACTIVATEURL + config.UPDATETICKET, updateRecord),
+        delete: (id) => axios.delete(config.APIACTIVATEURL + config.DELETETICKET + "/" + id)
+    };
+};
+const addOrEdit = (formData) => {
+  console.log(formData)
+  if (formData.ticketId === "00000000-0000-0000-0000-000000000000") {
+      applicationAPI()
+          .create(formData)
           .then((res) => {
               console.log(res.data)
-          if(res.data.statusCode === 200){
-            GetNewTicket("1");
-            resetform();
-            Alert.alert(res.data.data);
-            } else {
-              console.log("err")
-            }
-          }).catch(err=>console.log(err));;
-      } else {
-        axios.put(config.APIACTIVATEURL + config.UPDATETICKET,
-        formData
-      ).then
-      ((res)=>
-      {
-       console.log(res.data)
-       if(res.data.statusCode === 200){
-         GetNewTicket("1");
-         Alert.alert(res.data.data);
-         resetform();
-       }else{
-         console.log("err")
-       }
-       
-     }
-      ).catch(err=>console.log(err));
-   }
- }
+              if (res.data.statusCode === 200) {
+                  Alert.alert(res.data.data);
+                  resetform();
+                  GetNewTicket("1");
+              }
+              else {
+                  Alert.alert("err2");
+              }
+          });
+  } else {
+      applicationAPI()
+          .update(formData)
+          .then((res) => {
+            console.log(res.data)
+              if (res.data.statusCode === 200) {
+                  Alert.alert(res.data.data);
+                  resetform();
+                  GetNewTicket("1");
+              }
+              else {
+                  Alert.alert("err4");
+              }
+          });
+  }
+};
+    
     
     const GetNewTicket =(number) => {
-      axios.get(config.APIACTIVATEURL + config.Ticket/GetByUser+"/"+`${UserId}`).then
+      axios.get(config.APIACTIVATEURL + config.GETTICKETBYUSER+"?UserId="+`${UserId}`).then
          ((res)=>
          {
           setTicket(res.data.data.data);
@@ -144,7 +158,7 @@ import config from '../../../Configurations/APIConfig';
     );
 
     const DeleteTicket =(id)=>{
-       axios.delete(config.APIACTIVATEURL + config.DELETETICKET+"/"`${id}`).then
+       axios.delete(config.APIACTIVATEURL + config.DELETETICKET+"/"+`${id}`).then
        ((res)=>
          {
           console.log(res.data);
@@ -153,7 +167,7 @@ import config from '../../../Configurations/APIConfig';
           }else{
             console.log("err")
           }
-          GetTicketList();
+          GetNewTicket();
 
         }
          ).catch(err=>console.log(err));
@@ -172,9 +186,7 @@ import config from '../../../Configurations/APIConfig';
     });
      console.log(data)
    }
-   useEffect(() => {
-    if (recordForEdit !== null) setValues(recordForEdit);
-  }, [recordForEdit]);
+   
   
     return (
       <ScrollView ref={scrollRef}>
@@ -183,7 +195,7 @@ import config from '../../../Configurations/APIConfig';
           <View>
             <Text style={styles.formLabels}>Category</Text>
             <RNPickerSelect
-            onValueChange={(text)=>handleInputChange(text,'ticketCategoryId')}
+            onValueChange={(text)=>handleInputChange('ticketCategoryId',text)}
             value={values.ticketCategoryId}
             items={Category.map(abc =>
               ({
@@ -200,7 +212,7 @@ import config from '../../../Configurations/APIConfig';
           <View>
             <Text style={styles.formLabels}>Priority</Text>
             <RNPickerSelect
-            onValueChange={(text)=>handleInputChange(text,'ticketPriority')}
+            onValueChange={(text)=>handleInputChange('ticketPriority',text)}
             value={values.ticketPriority}
             items={[
                 { label: 'LOW', value: 'LOW' },
@@ -221,7 +233,7 @@ import config from '../../../Configurations/APIConfig';
               placeholder="Ticket Query"
               multiline={true}
               numberOfLines={5}
-              onChangeText={(text)=>handleInputChange(text,'ticketQuery')}
+              onChangeText={(text)=>handleInputChange('ticketQuery',text)}
             />
            {errors.q1 ? (
           <Text style={styles.errorText}>{errors.q1}</Text>
@@ -259,6 +271,7 @@ import config from '../../../Configurations/APIConfig';
        onPress={resetform}
        >Cancel</Text>
       </TouchableOpacity>
+      <Text>{values.ticketId}</Text>
       </View>
         </View>
         <ScrollView style={{height:"auto",backgroundColor:"#e9ebec"}}>
