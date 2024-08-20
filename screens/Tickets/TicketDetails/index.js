@@ -6,6 +6,7 @@ import { ScrollView, Text, TextInput, View ,TouchableOpacity, Alert} from 'react
 import { AuthContext } from '../../../context/AuthContext';
 import styles from './styles';
 import config from '../../../Configurations/APIConfig'
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const TicketDetails = () => {
   const [ticketDetails, setTicketDetails] = useState("");
@@ -30,10 +31,10 @@ const TicketDetails = () => {
   };
 
   const GetTicketDetailsbyId = () => {
-    axios.get(config.APIACTIVATEURL + config.GETTICKETBYID + "/"+`${id}`).then
+    axios.get(config.APIACTIVATEURL + config.GETTICKETBYID + "?id="+`${id}`).then
        ((res)=>
        {
-        const response = (res.data);
+        const response = (res.data.data);
         setTicketDetails(response);
         console.log(response)
       }
@@ -59,6 +60,10 @@ const TicketDetails = () => {
   const handleCommentChange=(text)=>{
     setComment(text)
   }
+  const resetform =()=>{
+      setComment("")
+      setErrors({})
+    }
 const PostComment =()=>{
   if(validateForm()){
   axios.post(config.APIACTIVATEURL + config.CREATETICKETRESPONSE,{
@@ -73,7 +78,8 @@ const PostComment =()=>{
         console.log(response);
         if(response.statusCode === 200){
           GetTicketResponsebyId();
-          Alert.alert("Ticket Created")
+          resetform();
+          Alert.alert("Record Created")
 
         }else{
           console.log("err")
@@ -94,12 +100,13 @@ const PostComment =()=>{
                 <View style={{margin:10}}><Text>
         {ticketResponse.map(xyz=> <View style={{margin:10,marginBottom:30}}key={xyz.ticketResponseId}>
           <View style={{flex:1,flexDirection:"row"}}>
-        <Text style={styles.name}>{xyz.name}</Text>
-        <Text style={{marginLeft:10}}>{moment(xyz.updatedDate).format('MMM Do YYYY, h:mm a')}</Text>
+          <Icon name="person-circle-sharp" size={30} color="gray" />
+          <View style={{flex:1,flexDirection:"column"}}>
+        <Text style={{marginLeft:10,fontWeight:"600"}}>{moment(xyz.updatedDate).format('MMM Do YYYY, h:mm a')}</Text>
+        
+        <Text style={styles.responseData}>{xyz.ticketResponseData}</Text></View>
+        
         </View>
-        <View style={{width:270}}><Text style={styles.responseData}>{xyz.ticketResponseData}</Text></View>
-        
-        
         </View>)}
           </Text></View>
                 

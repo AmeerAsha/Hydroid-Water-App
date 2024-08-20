@@ -65,7 +65,7 @@ module.exports = {
     CREATETICKET: 'Ticket',
     UPDATETICKET: 'Ticket',
     DELETETICKET: 'Ticket',
-    GETTICKETBYID: 'Ticket',
+    GETTICKETBYID: 'Ticket/GetById',
     GETTICKETBYCATEGORY: 'Ticket/GetByCategory',
     GETTICKETBYUSER: 'Ticket/GetByUser',
     GETTICKETBYSTATUS: 'Ticket/GetByStatus',

@@ -26,8 +26,10 @@ const Dashboard = ({navigation}) => {
   const [labels, setLabels] = useState([]);
   const [series1, setSeries1] = useState([]);
   const [series2, setSeries2] = useState([]);
+  const [series3, setSeries3] = useState([]);
   const [name1, setName1] = useState("")
   const [name2, setName2] = useState("")
+  const [name3, setName3] = useState("")
   const [seriesList, setSeriesList] = useState([])
   const [selectedDevice, setSelectedDevice] = useState('')
   const [devices, setDevices] = useState([]);
@@ -75,12 +77,14 @@ const Dashboard = ({navigation}) => {
         setBarData(res.data.data);
         setLabels(res.data.data.categories)
         setSeriesList(res.data.data.seriesList)
-          var [array1, array2] = res.data.data.seriesList
+          var [array1, array2,array3] = res.data.data.seriesList
           setSeries1(array1.data)
           setName1(array1.name)
           setSeries2(array2.data)
           setName2(array2.name)
-        console.log(series1)
+          setSeries3(array3.data)
+          setName3(array3.name)
+        console.log(name3)
       }
        ).catch((err)=>{ console.log(err)});
     
@@ -139,6 +143,10 @@ const Dashboard = ({navigation}) => {
         ({
           x:labels[index],y:v1
         }))
+        const data6 = series3.map((v1,index)=>
+          ({
+            x:labels[index],y:v1
+          }))  
   
   
   
@@ -251,33 +259,17 @@ const Dashboard = ({navigation}) => {
       <Text style={styles.graphDetails}>Water Consumption - Last Updated {moment(details.lastUpdated).format('MMM Do YYYY, h:mm a')}</Text>
         <View style={{marginTop:30,marginBottom:30}}>
         <VictoryChart
-        domainPadding={{ x: 1 }}
+        domainPadding={{ x: 50, y: [0, 20] }} // Adjust domain padding for bar spacing
+        padding={{ top: 80, bottom: 60, left: 50, right: 50 }} 
         theme={VictoryTheme.material}
+        height={370}
+        width={430}
         animate={{
           duration: 2000,
           onLoad: { duration: 1000 },
         }}
         >
-        <VictoryLegend
-          x={Dimensions.get('screen').width / 2 -100}
-          y={Dimensions.get('screen').width /2 - 185}
-          data={
-            [
-              {
-                name:name1,
-                symbol:{
-                  fill:"#3577f1"
-                }
-              },
-              {
-                name:name2,
-                symbol:{
-                  fill:"#0ab39c"
-                }
-              }
-            ]
-          }
-          />
+        
           <VictoryAxis
           
           style={{
@@ -300,25 +292,62 @@ const Dashboard = ({navigation}) => {
             }
           }}
         />
-          <VictoryGroup offset={8}  >
+          <VictoryGroup offset={6}  >
           <VictoryBar data={data4} style={{data:{fill:"#3577f1"}, labels: { fill: 'black', fontSize: 12, fontWeight: 'bold' },}} animate={{
             duration: 2000,
             onLoad: { duration: 1000 },
             
           }}
+          labels={({ datum }) => datum.y !== 0 ? datum.y : ''}
           labelComponent={
-            <VictoryLabel dy={-30} />
+            <VictoryLabel dy={-2} />
           }
           />
           <VictoryBar data={data5} style={{data:{fill:"#0ab39c"},labels: { fill: 'black', fontSize: 12, fontWeight: 'bold' },}} animate={{
             duration: 2000,
             onLoad: { duration: 1000 },
           }}
+          labels={({ datum }) => datum.y !== 0 ? datum.y : ''}
           labelComponent={
-            <VictoryLabel dy={-90} />
+            <VictoryLabel dy={-2} />
+          }
+          /> 
+          <VictoryBar data={data6} style={{data:{fill:"#f7b84b",width:50},labels: { fill: 'black', fontSize: 12, fontWeight: 'bold' },}} animate={{
+            duration: 2000,
+            onLoad: { duration: 1000 },
+          }}
+          labels={({ datum }) => datum.y !== 0 ? datum.y : ''}
+          labelComponent={
+            <VictoryLabel dy={-2} />
           }
           /> 
           </VictoryGroup>
+          <VictoryLegend
+           x={100} // X position of the legend
+           y={1}
+          data={
+            [
+              {
+                name:name1,
+                symbol:{
+                  fill:"#3577f1"
+                }
+              },
+              {
+                name:name2,
+                symbol:{
+                  fill:"#0ab39c"
+                }
+              },
+              {
+                name:name3,
+                symbol:{
+                  fill:"#f7b84b"
+                }
+              }
+            ]
+          }
+          />
         </VictoryChart>
       </View>  
     </View>

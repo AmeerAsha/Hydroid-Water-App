@@ -8,7 +8,7 @@ export default StyleSheet.create({
     query:{fontSize:16,marginTop:10},
     comments:{fontSize:19,fontWeight:"600",color:"black"},
     name:{fontSize:17,color:"black",fontWeight:"500"},
-    responseData:{fontSize:15,margin:10,},
+    responseData:{fontSize:16,margin:10,},
     heading2:{fontSize:16,fontWeight:"400",color:"black"},
     commentline:{borderColor: "#e9ebec",
         backgroundColor: "white",

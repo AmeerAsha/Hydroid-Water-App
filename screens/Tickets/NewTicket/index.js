@@ -53,8 +53,9 @@ const initialFieldValues = {
          );
     };
     useEffect(()=>{
-      GetTicketDetails();
+      //GetTicketDetails();
       GetTicketCategories();
+      GetNewTicket();
     },
     
     []);
@@ -115,6 +116,7 @@ const addOrEdit = (formData) => {
               }
               else {
                   Alert.alert("err2");
+                  resetform();
               }
           });
   } else {
@@ -129,6 +131,7 @@ const addOrEdit = (formData) => {
               }
               else {
                   Alert.alert("err4");
+                  resetform();
               }
           });
   }
@@ -271,7 +274,7 @@ const addOrEdit = (formData) => {
        onPress={resetform}
        >Cancel</Text>
       </TouchableOpacity>
-      <Text>{values.ticketId}</Text>
+      
       </View>
         </View>
         <ScrollView style={{height:"auto",backgroundColor:"#e9ebec"}}>
