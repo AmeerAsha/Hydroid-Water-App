@@ -72,9 +72,9 @@ export default StyleSheet.create({
         height: 157
       },
       statItemTitle: {
-        fontSize: 16,
+        fontSize: 12,
         flexWrap: 'wrap',
-        fontWeight: '600',
+        fontWeight: '900',
         color:"white"
       },
       statItemData: {

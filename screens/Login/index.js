@@ -43,6 +43,9 @@ const LoginScreen = () => {
           value={username}
           placeholder="Enter username"
           onChangeText={text => setEmail(text)}
+          autoCorrect={false}     // Disable auto-correction
+        spellCheck={false}      // Disable spell check
+        autoCapitalize="none"
         />
        
        {errors.username ? (
@@ -55,6 +58,9 @@ const LoginScreen = () => {
           placeholder="Enter password"
           onChangeText={text => setPassword(text)}
           secureTextEntry
+          autoCorrect={false}     // Disable auto-correction
+        spellCheck={false}      // Disable spell check
+        autoCapitalize="none"
         />
        
        {errors.password ? (
@@ -68,10 +74,7 @@ const LoginScreen = () => {
             //login(username, password);
           }
         />
-        <View style={styles.bottom}>
-          <Text>Don't have an account? </Text>
-            <Text style={styles.link}>Contact Adminstrator</Text>
-        </View>
+        
       </View>
       </View>
     

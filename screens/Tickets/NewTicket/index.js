@@ -130,7 +130,7 @@ const addOrEdit = (formData) => {
                   GetNewTicket("1");
               }
               else {
-                  Alert.alert("err4");
+                  Alert.alert("Please fill in all the fields before submitting.");
                   resetform();
               }
           });

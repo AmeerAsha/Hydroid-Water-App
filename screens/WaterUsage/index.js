@@ -9,33 +9,36 @@ import styles from './styles';
 import pickerSelectStyles from'./styles'
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import * as XLSX from 'xlsx'
-import {writeFile,DownloadDirectoryPath} from 'react-native-fs';
+import {writeFile,DownloadDirectoryPath,DocumentDirectoryPath} from 'react-native-fs';
 import RNPickerSelect from 'react-native-picker-select';
 import config from '../../Configurations/APIConfig';
+import Spinner from 'react-native-loading-spinner-overlay';
+import PushNotification from 'react-native-push-notification';
 
 const WaterUsage = () => {
-  const dateFrom0 = new Date(Date.now());
-  const dateTo0 = new Date(Date.now());
-  const dateweek = dateTo0.getDate();
-  const dateFrom3 = new Date(dateTo0).setDate(dateweek - 7);
-  const dateFromWeekly = moment(dateFrom3).format('DD-MM-YYYY');
-  const dateFromWeekly1 = moment(dateFrom3).format('YYYY-MM-DD');
-  const dateFromToday = moment(dateFrom0).format('DD-MM-YYYY');
-  const dateFromToday1 = moment(dateFrom0).format('YYYY-MM-DD');
-  const [dateFrom, setDateFrom] = useState(new Date(Date.now()));
-  const [dateTo, setDateTo] = useState(new Date(Date.now()));
+  const oneWeekBack = new Date();
+  oneWeekBack.setDate(oneWeekBack.getDate() - 7);
+  const [dateFrom, setDateFrom] = useState(oneWeekBack);
+  const dateFromWeekly = moment(dateFrom).format('DD-MM-YYYY');
+  const dateFromWeekly1 = moment(dateFrom).format('YYYY-MM-DD');
+  const [dateTo, setDateTo] = useState(new Date());
+  const dateFromToday = moment(dateTo).format('DD-MM-YYYY');
+  const dateFromToday1 = moment(dateTo).format('YYYY-MM-DD');
   const [showFrom, setShowFrom] = useState(false);
   const [showTo, setShowTo] = useState(false);
   const [waterUsage, setWaterUsage] = useState([]);
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo} = useContext(AuthContext);
   const [deviceIds, setDeviceIds] = useState([])
   const [deviceId, setDeviceId] = useState(null)
+  const [isLoading, setIsLoading] = useState(false);
   const UserId = userInfo.userId
   
 
   
   const printPDF = async () => {
-    const html = `<html>
+    
+    
+      const html = `<html>
     <head>
             <style>
               body {
@@ -94,17 +97,20 @@ const WaterUsage = () => {
         html,
       fileName: 'MeterReading',
       base64: true,
-      directory: 'Documents',
+      directory: 'Downloads',
       height:500,
       width:800
       };
       
         let pdf = await RNHTMLtoPDF.convert(options);
-        Alert.alert('PDF Generated', `PDF saved to: ${pdf.filePath}`);
+        Alert.alert('Download Complete', `${pdf}`);
+    
     }
   
   const exportToExcel = () => {
-    var fileName ="/MeterReading-" + moment(dateFrom3).format('DDMMYYYY') + "-" + moment(dateTo0).format('DDMMYYYY');
+    
+   
+      var fileName ="/MeterReading-" + moment(dateFrom).format('DDMMYYYY') + "-" + moment(dateTo).format('DDMMYYYY');
     
     // Create a new workbook
     const wb = XLSX.utils.book_new();
@@ -114,13 +120,17 @@ const WaterUsage = () => {
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     const wbout = XLSX.write(wb, { type: 'binary', bookType: "xlsx" });
     // Save the workbook as an Excel file
-   writeFile(DownloadDirectoryPath +`/MeterReading.csv`, wbout, 'ascii').then((r) => {
-      Alert.alert('Excel file saved ')
+    
+   writeFile(DocumentDirectoryPath +`/MeterReading.xlsx`, wbout, 'ascii').then((r) => {
+      Alert.alert('Download Complete', 'File downloaded successfully.')
 
    }).catch((e) => {
        console.log('Error', e);
    });
     //XLSX.writeFile(wb, `${fileName}.xlsx`);
+    
+    
+    
 };
 
   const GetWaterUsageDetails = () => {
@@ -146,8 +156,10 @@ const WaterUsage = () => {
   };
 
   const dateFromHandle = (event, selectedDate) => {
+    //const currentDate = selectedDate || date;
     setDateFrom(selectedDate);
     setShowFrom(false);
+    
   };
   const dateToHandle = (event, selectedDate) => {
     setDateTo(selectedDate);
@@ -186,7 +198,12 @@ const DynamicOptions = deviceIds.map(item => ({
 const combinedOptions = [...staticOptions, ...DynamicOptions];
 
   const Search = () => {
-    GetDetailsByDevice();
+    if(deviceId){
+      GetDetailsByDevice();
+    }else{
+      Alert.alert("Please select Device")
+    }
+    
   };
 
   useEffect(() => {
@@ -259,15 +276,12 @@ const combinedOptions = [...staticOptions, ...DynamicOptions];
           <View style={styles.usageView}>
           <Text style={styles.usageText}>Water Usage Data</Text>
           <View style={styles.btnView}>
-            <TouchableOpacity
-              style={styles.btn1Style}
-              onPress={printPDF}>
-              <Text style={styles.textStyle}>PDF</Text>
-            </TouchableOpacity>
+          
             <TouchableOpacity
               style={styles.btn2Style}
               onPress={exportToExcel}>
-              <Text style={styles.textStyle}>Excel</Text>
+              <Text style={styles.textStyle}>Download</Text>
+              
             </TouchableOpacity>
             </View>
           </View>

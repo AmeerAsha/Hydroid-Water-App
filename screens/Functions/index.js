@@ -1,65 +1,69 @@
-import React from 'react';
-import { View, Button, Alert, Platform } from 'react-native';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import React, { useState } from 'react';
+import { View, Button, Alert } from 'react-native';
 import RNFS from 'react-native-fs';
-import { PermissionsAndroid } from 'react-native';
-
-const requestExternalWritePermission = async () => {
-  if (Platform.OS === 'android') {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        {
-          title: 'External Storage Write Permission',
-          message: 'App needs access to Storage data.',
-        },
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    } catch (err) {
-      console.warn(err);
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
-
-const createPDF = async () => {
-  const options = {
-    html: '<h1>PDF Test</h1><p>This is a test PDF document.</p>',
-    fileName: 'test',
-    directory: 'Documents',
-  };
-
-  if (Platform.OS === 'android') {
-    const hasPermission = await requestExternalWritePermission();
-    if (!hasPermission) {
-      Alert.alert('Permission denied', 'You need to give storage permission to download the PDF.');
-      return;
-    }
-  }
-
-  try {
-    const pdf = await RNHTMLtoPDF.convert(options);
-    Alert.alert('PDF Generated', `PDF saved to: ${pdf.filePath}`);
-
-    if (Platform.OS === 'android') {
-      const destPath = `${RNFS.DownloadDirectoryPath}/test.pdf`;
-      await RNFS.moveFile(pdf.filePath, destPath);
-      Alert.alert('PDF Moved', `PDF moved to: ${destPath}`);
-    } else {
-      // Handle iOS case if needed
-    }
-  } catch (error) {
-    Alert.alert('Error', `Failed to generate PDF: ${error.message}`);
-    console.error(error);
-  }
-};
+import PushNotification from 'react-native-push-notification';
 
 const Functions = () => {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const downloadPDF = async () => {
+    const pdfUrl = 'https://css4.pub/2015/icelandic/dictionary.pdf'; // Replace with your PDF URL
+    const downloadDest = `${RNFS.DocumentDirectoryPath}/sample.pdf`;
+
+    setIsDownloading(true);
+
+    const options = {
+      fromUrl: pdfUrl,
+      toFile: downloadDest,
+      background: true,
+      begin: (res) => {
+        console.log('Download started');
+        showNotification(0);
+      },
+      progress: (res) => {
+        let progress = Math.floor((res.bytesWritten / res.contentLength) * 100);
+        showNotification(progress);
+      },
+    };
+
+    try {
+      const downloadResult = RNFS.downloadFile(options);
+      const result = await downloadResult.promise;
+
+      if (result.statusCode === 200) {
+        console.log('File downloaded successfully:', downloadDest);
+        PushNotification.localNotification({
+          channelId: 'download-channel',
+          title: 'Download Complete',
+          message: 'Your PDF has been downloaded successfully.',
+          autoCancel: true,
+        });
+        Alert.alert('Download Complete', 'PDF downloaded successfully.');
+      } else {
+        throw new Error('Download failed');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      Alert.alert('Download Failed', 'There was an error downloading the PDF.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const showNotification = (progress) => {
+    PushNotification.localNotification({
+      channelId: 'download-channel',
+      title: 'Downloading PDF...',
+      message: `Download progress: ${progress}%`,
+      progress: progress, // Only on Android
+      autoCancel: false, // Do not automatically cancel the notification
+      ongoing: true, // Keep the notification ongoing
+    });
+  };
+
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Button title="Create PDF" onPress={createPDF} />
+      <Button title="Download PDF" onPress={downloadPDF} disabled={isDownloading} />
     </View>
   );
 };

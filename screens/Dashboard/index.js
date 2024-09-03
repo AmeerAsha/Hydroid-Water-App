@@ -8,18 +8,18 @@ import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from './styles';
 import config from '../../Configurations/APIConfig';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const Dashboard = ({navigation}) => {
-    const scrollRef = useRef();
-  const dateFrom0 = new Date(Date.now());
-  const dateTo0 = new Date(Date.now());
-  const dateweek = dateTo0.getDate();
-  const dateFrom3 = new Date(dateTo0).setDate(dateweek-7);
-  const dateFromWeekly = moment(dateFrom3).format('DD-MM-YYYY');
-  const dateFromWeekly1 = moment(dateFrom3).format('YYYY-MM-DD');
-  const dateFromToday = moment(dateFrom0).format('DD-MM-YYYY');
-  const dateFromToday1 = moment(dateFrom0).format('YYYY-MM-DD');
-  console.log(dateFromToday);
+  const scrollRef = useRef();
+  const oneWeekBack = new Date();
+  oneWeekBack.setDate(oneWeekBack.getDate() - 7);
+  const [dateFrom, setDateFrom] = useState(oneWeekBack);
+  const dateFromWeekly = moment(dateFrom).format('DD-MM-YYYY');
+  const dateFromWeekly1 = moment(dateFrom).format('YYYY-MM-DD');
+  const [dateTo, setDateTo] = useState(new Date());
+  const dateFromToday = moment(dateTo).format('DD-MM-YYYY');
+  const dateFromToday1 = moment(dateTo).format('YYYY-MM-DD');
   const [details, setDetails] = useState([]);
   const [leak, setLeak] = useState(0);
   const [barData, setBarData] = useState([]);
@@ -35,8 +35,7 @@ const Dashboard = ({navigation}) => {
   const [devices, setDevices] = useState([]);
   const [showFrom, setShowFrom] = useState(false);
   const [showTo, setShowTo] = useState(false);
-  const [dateFrom, setDateFrom] = useState(new Date(Date.now()));
-  const [dateTo, setDateTo] = useState(new Date(Date.now())); 
+  const [isLoading, setIsLoading] = useState(false);
   
   
   useEffect(()=>{
@@ -77,63 +76,28 @@ const Dashboard = ({navigation}) => {
         setBarData(res.data.data);
         setLabels(res.data.data.categories)
         setSeriesList(res.data.data.seriesList)
+        setIsLoading(false)
           var [array1, array2,array3] = res.data.data.seriesList
           setSeries1(array1.data)
           setName1(array1.name)
           setSeries2(array2.data)
           setName2(array2.name)
+          
           setSeries3(array3.data)
           setName3(array3.name)
-        console.log(name3)
+          
+       // console.log(res.data)
+       
+       
       }
        ).catch((err)=>{ console.log(err)});
+       
     
   };
   
   
-  const data1 = {
-    b1:[
-      {x:labels[0] ,y:series1[0]},
-      {x:labels[1] ,y:series1[1]},
-      {x:labels[2] ,y:series1[2]},
-      {x:labels[3] ,y:series1[3]},
-      {x:labels[4] ,y:series1[4]},
-      {x:labels[5] ,y:series1[5]},
-      {x:labels[6] ,y:series1[6]},
-    ],
-    b2:[
-      {x:labels[0] ,y:series2[0]},
-      {x:labels[1] ,y:series2[1]},
-      {x:labels[2] ,y:series2[2]},
-      {x:labels[3] ,y:series2[3]},
-      {x:labels[4] ,y:series2[4]},
-      {x:labels[5] ,y:series2[5]},
-      {x:labels[6] ,y:series2[6]},
-    ]
-    
-  };
-  const data2 = {
-    b1:[
-      {x:"4-jul-2024" ,y:0},
-      {x:"5-jul-2024" ,y:0},
-      {x:"6-jul-2024" ,y:30},
-      {x:"7-jul-2024" ,y:10},
-      {x:"8-jul-2024" ,y:30},
-      {x:"9-jul-2024" ,y:0},
-      {x:"10-jul-2024" ,y:20},
-    ],
-    b2:[
-      {x:"4-jul-2024" ,y:0},
-      {x:"5-jul-2024" ,y:0},
-      {x:"6-jul-2024" ,y:220},
-      {x:"7-jul-2024" ,y:290},
-      {x:"8-jul-2024" ,y:140},
-      {x:"9-jul-2024" ,y:240},
-      {x:"10-jul-2024" ,y:260},
-    ]
-    
-  };
-
+ 
+  
   
       const data4 = series1.map((v1,index)=>
       ({
@@ -171,11 +135,15 @@ const Dashboard = ({navigation}) => {
     }
   };
   const handleButtonClick = () => {
-    GetBarGraphDataWeekly();
+    
     if (scrollRef.current) {
       scrollRef.current.scrollToEnd({ animated: true });
     }
+    setIsLoading(true);
     
+      GetBarGraphDataWeekly();
+   
+     // setIsLoading(false)
   };
  
   return (
@@ -186,23 +154,23 @@ const Dashboard = ({navigation}) => {
       <View style={styles.statList}>
         <View style={styles.statItem}>
           <Icon name="hours-24" size={65} color="white"></Icon>
-          <Text style={styles.statItemTitle}>Last 24-hours</Text>
+          <Text style={styles.statItemTitle}>TODAY'S USAGE</Text>
           <Text style={styles.statItemData}>{details.todayCountData} litres</Text>
         </View>
         <View style={styles.statItem1}>
           <Icon name="calendar-week" size={65} color="white"></Icon>
-          <Text style={styles.statItemTitle}>Current week</Text>
+          <Text style={styles.statItemTitle}>LAST 7 DAYS USAGE</Text>
           <Text style={styles.statItemData}>{details.weeklyCount} litres</Text>
         </View>
         <View style={styles.statItem2}>
           <Icon name="calendar-month" size={65} color="white"></Icon>
-          <Text style={styles.statItemTitle}>Current month</Text>
+          <Text style={styles.statItemTitle}>CURRENT MONTH USAGE</Text>
           <Text style={styles.statItemData}>{details.monthlyCount} litres</Text>
         </View>
         <View style={styles.statItem3}>
           <Icon name="pipe-leak" size={65} color="white"></Icon>
-          <Text style={styles.statItemTitle}>No. of leaks</Text>
-          <Text style={styles.statItemData}>{leak}</Text>
+          <Text style={styles.statItemTitle}>NO OF LEAKS</Text>
+          <Text style={styles.statItemData}>{details.leaks}</Text>
         </View>
       </View>
       <TouchableHighlight style={styles.raiseticketButton} underlayColor="white">
@@ -253,6 +221,7 @@ const Dashboard = ({navigation}) => {
             style = {styles.raiseticketText}
            onPress={handleButtonClick}
             >Search</Text>
+            <Spinner visible={isLoading} />
             </TouchableOpacity>    
         </View>   
       <View style={styles.bottom}>
@@ -264,10 +233,7 @@ const Dashboard = ({navigation}) => {
         theme={VictoryTheme.material}
         height={370}
         width={430}
-        animate={{
-          duration: 2000,
-          onLoad: { duration: 1000 },
-        }}
+        
         >
         
           <VictoryAxis
@@ -293,29 +259,19 @@ const Dashboard = ({navigation}) => {
           }}
         />
           <VictoryGroup offset={6}  >
-          <VictoryBar data={data4} style={{data:{fill:"#3577f1"}, labels: { fill: 'black', fontSize: 12, fontWeight: 'bold' },}} animate={{
-            duration: 2000,
-            onLoad: { duration: 1000 },
-            
-          }}
+          <VictoryBar data={data4} style={{data:{fill:"#3577f1"}, labels: { fill: 'black', fontSize: 12, fontWeight: 'bold' },}}
           labels={({ datum }) => datum.y !== 0 ? datum.y : ''}
           labelComponent={
             <VictoryLabel dy={-2} />
           }
           />
-          <VictoryBar data={data5} style={{data:{fill:"#0ab39c"},labels: { fill: 'black', fontSize: 12, fontWeight: 'bold' },}} animate={{
-            duration: 2000,
-            onLoad: { duration: 1000 },
-          }}
+          <VictoryBar data={data5} style={{data:{fill:"#0ab39c"},labels: { fill: 'black', fontSize: 12, fontWeight: 'bold' },}} 
           labels={({ datum }) => datum.y !== 0 ? datum.y : ''}
           labelComponent={
             <VictoryLabel dy={-2} />
           }
           /> 
-          <VictoryBar data={data6} style={{data:{fill:"#f7b84b",width:50},labels: { fill: 'black', fontSize: 12, fontWeight: 'bold' },}} animate={{
-            duration: 2000,
-            onLoad: { duration: 1000 },
-          }}
+          <VictoryBar data={data6} style={{data:{fill:"#f7b84b",width:50},labels: { fill: 'black', fontSize: 12, fontWeight: 'bold' },}} 
           labels={({ datum }) => datum.y !== 0 ? datum.y : ''}
           labelComponent={
             <VictoryLabel dy={-2} />
@@ -343,6 +299,7 @@ const Dashboard = ({navigation}) => {
                 name:name3,
                 symbol:{
                   fill:"#f7b84b"
+                  
                 }
               }
             ]

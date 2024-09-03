@@ -15,6 +15,7 @@ export default StyleSheet.create({
         borderColor: '#bbb',
         borderRadius: 5,
         paddingHorizontal: 14,
+        color:"black"
       },
       link: {
         color: 'blue',

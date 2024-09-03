@@ -131,8 +131,8 @@ export default StyleSheet.create({
         alignItems: 'center',
         alignSelf: 'center',
         borderRadius: 5,
-        width: 80,
-        height: 30,
+        width: 120,
+        height: 40,
         marginHorizontal:10
       },
       devices:{
